@@ -12,5 +12,5 @@ func main() {
 	*r = routing.SetupRouting(*r)
 
 	// call the function based on the port needed and your own routing function
-	server(r, "10000")
+	Server(r, "10000")
 }

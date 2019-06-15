@@ -13,7 +13,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func server(r *mux.Router, port string) {
+func Server(r *mux.Router, port string) {
 	server := &http.Server{
 		Handler: r,
 		Addr:    ":" + port,
