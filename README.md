@@ -15,7 +15,7 @@ Usage:
 import (
   .
   .
-  Server github.com/SUMUKHA-PK/Basic-Golang-Server
+  Server "github.com/SUMUKHA-PK/Basic-Golang-Server/server"
   .
   .
 )
@@ -23,7 +23,7 @@ import (
 func main(){
   .
   .
-  Server.server(routing_function, port_number)  //Server starts!
+  server.Server(routing_function, port_number)  //Server starts!
   .
   .
 }
