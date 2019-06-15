@@ -28,3 +28,6 @@ func main(){
   .
 }
 ```
+
+
+PS: Contributions and thoughts on how to improve/ add more features is appreciated!
