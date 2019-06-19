@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -13,12 +14,8 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func Server(r *mux.Router, port string) {
-	server := &http.Server{
-		Handler: r,
-		Addr:    ":" + port,
-	}
-
+// Server is the function that starts the listening server
+func Server(r *mux.Router, port string) error {
 	LogFileLocation := os.Getenv("LogFileLocation")
 	if LogFileLocation != "" {
 		log.SetOutput(&lumberjack.Logger{
@@ -30,29 +27,39 @@ func Server(r *mux.Router, port string) {
 		})
 	}
 
-	go func() {
-		log.Println("Starting Server on port " + port)
-		if err := server.ListenAndServe(); err != nil {
-			log.Fatal(err)
-		}
-	}()
+	r.HandleFunc("/healthCheck", healthCheckHandler)
 
-	waitForShutdown(server)
+	server := &http.Server{
+		Handler: r,
+		Addr:    ":" + port,
+	}
+
+	go gracefulShutdown(server)
+
+	log.Println("Starting Server on port " + port)
+	return server.ListenAndServe()
 }
 
-// waitForShutdown shuts down the server on getting a ^C signal
-func waitForShutdown(server *http.Server) {
+// gracefulShutdown shuts down the server on getting a ^C signal
+func gracefulShutdown(server *http.Server) {
 	interruptChan := make(chan os.Signal, 1)
-	signal.Notify(interruptChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(interruptChan, os.Interrupt, syscall.SIGTERM)
 
 	// Block until we receive our signal.
 	<-interruptChan
 
-	// Create a deadline to wait for.
+	// Create a deadline to wait for currently serving items.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	server.Shutdown(ctx)
 
 	log.Println("Shutting down")
 	os.Exit(0)
+}
+
+// healthCheckHandler is used for pings to check health of server
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	io.WriteString(w, `{"alive": true}`)
 }
