@@ -23,7 +23,8 @@ import (
 func main(){
   .
   .
-  server.Server(routing_function, port_number)  //Server starts!
+  err:= server.Server(routing_function, port_number)  //Server starts!
+  //Handle err accordingly.
   .
   .
 }
