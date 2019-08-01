@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/SUMUKHA-PK/Basic-Golang-Server/server"
 	"github.com/SUMUKHA-PK/Database-password-management-system/routing"
 	"github.com/gorilla/mux"
@@ -13,5 +15,8 @@ func main() {
 	*r = routing.SetupRouting(*r)
 
 	// call the function based on the port needed and your own routing function
-	server.Server(r, "10000")
+	err := server.Server(r, "65536")
+	if err != nil {
+		fmt.Println(err)
+	}
 }

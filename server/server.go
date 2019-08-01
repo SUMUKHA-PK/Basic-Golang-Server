@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -16,6 +17,11 @@ import (
 
 // Server is the function that starts the listening server
 func Server(r *mux.Router, port string) error {
+
+	if port > "65535" {
+		return errors.New("Port number exceeds limit of 65535")
+	}
+
 	LogFileLocation := os.Getenv("LogFileLocation")
 	if LogFileLocation != "" {
 		log.SetOutput(&lumberjack.Logger{
