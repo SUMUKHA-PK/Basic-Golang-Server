@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -18,10 +19,10 @@ import (
 // Server is the function that starts the listening server
 func Server(r *mux.Router, port string) error {
 
-	if port > "65535" {
-		return errors.New("Port number exceeds limit of 65535")
+	err := checkValidPort(port)
+	if err != nil {
+		return err
 	}
-
 	LogFileLocation := os.Getenv("LogFileLocation")
 	if LogFileLocation != "" {
 		log.SetOutput(&lumberjack.Logger{
@@ -68,4 +69,15 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, `{"alive": true}`)
+}
+
+func checkValidPort(port string) error {
+	portInt, err := strconv.Atoi(port)
+	if err != nil {
+		return err
+	}
+	if portInt > 65535 {
+		return errors.New("Port number exceeds limit of 65535")
+	}
+	return nil
 }
