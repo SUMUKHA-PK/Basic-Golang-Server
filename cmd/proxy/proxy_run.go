@@ -4,12 +4,17 @@ import (
 	"fmt"
 
 	"github.com/SUMUKHA-PK/Basic-Golang-Server/proxy"
+	"github.com/SUMUKHA-PK/Basic-Golang-Server/proxy/routing"
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	proxy, err := proxy.StartProxy("8080")
+	r := mux.NewRouter()
+	*r = routing.SetupRouting(*r)
+
+	proxyServer, err := proxy.StartProxy(r, "8080")
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(proxy.PortList["8080"])
+	fmt.Println(proxyServer)
 }

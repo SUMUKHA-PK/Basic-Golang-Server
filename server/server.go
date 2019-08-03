@@ -19,8 +19,7 @@ import (
 // Server is the function that starts the listening server
 func Server(r *mux.Router, port string) error {
 
-	err := checkValidPort(port)
-	if err != nil {
+	if err := checkValidPort(port); err != nil {
 		return err
 	}
 	LogFileLocation := os.Getenv("LogFileLocation")
