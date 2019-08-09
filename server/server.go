@@ -65,6 +65,7 @@ func gracefulShutdown(server *http.Server) {
 
 // healthCheckHandler is used for pings to check health of server
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Health checked. OK")
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, `{"alive": true}`)

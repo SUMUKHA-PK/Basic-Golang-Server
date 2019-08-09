@@ -1,6 +1,8 @@
 package proxy
 
 import (
+	"sync"
+
 	"github.com/gorilla/mux"
 )
 
@@ -8,6 +10,7 @@ import (
 type Server struct {
 	Routes map[string]string // Hash of server and IP mapping
 	Router *mux.Router       // The proxy router
+	Mutex  sync.Mutex
 }
 
 // ProxyServer is the server datatype

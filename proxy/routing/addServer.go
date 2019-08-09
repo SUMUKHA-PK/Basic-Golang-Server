@@ -2,7 +2,6 @@ package routing
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -24,6 +23,7 @@ import (
 // proxy and rejects accordingly if a new server is requested on it.
 func AddServerToProxy(w http.ResponseWriter, r *http.Request) {
 
+	log.Println("/addServer request received")
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Bad request in proxy/routing/addServer.go")
@@ -33,15 +33,20 @@ func AddServerToProxy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var newReq proxy.AddServerReq
-	err = json.Unmarshal(body, &newReq)
-	if err != nil {
+	if err = json.Unmarshal(body, &newReq); err != nil {
 		log.Printf("Coudn't Unmarshal data in proxy/routing/addServer.go")
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	proxy.ProxyServer.Mutex.Lock()
 	hash := getHash(newReq.IP, proxy.ProxyServer)
-	fmt.Println(hash)
+	proxy.ProxyServer.Mutex.Unlock()
+
+	proxy.ProxyServer.Mutex.Lock()
+	// Add this to the routing of the proxy
+	proxy.ProxyServer.Routes[hash] = newReq.IP
+	proxy.ProxyServer.Mutex.Unlock()
 
 	outData := &responses.AddServerResponse{200, "Successfully added server to proxy", proxy.AddServerRes{Hash: hash}}
 	outJSON, err := json.Marshal(outData)
