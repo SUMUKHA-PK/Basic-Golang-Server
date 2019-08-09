@@ -8,9 +8,8 @@ import (
 
 // Server holds the data about a proxy server
 type Server struct {
-	Routes map[string]string // Hash of server and IP mapping
-	Router *mux.Router       // The proxy router
-	Mutex  sync.Mutex
+	RouteMap SyncMap     // A custom sync map
+	Router   *mux.Router // The proxy router
 }
 
 // ProxyServer is the server datatype
@@ -26,4 +25,10 @@ type AddServerReq struct {
 // /addServer request
 type AddServerRes struct {
 	Hash string
+}
+
+// SyncMap is a custom sync map
+type SyncMap struct {
+	Routes map[string]string // Hash of server and IP mapping
+	Mutex  sync.Mutex        //Lock
 }

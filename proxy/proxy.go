@@ -19,10 +19,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func newSyncMap() SyncMap {
+	return SyncMap{
+		Routes: make(map[string]string),
+	}
+}
+
 func newProxy() Server {
 	return Server{
-		Routes: make(map[string]string),
-		Router: mux.NewRouter(),
+		RouteMap: newSyncMap(),
+		Router:   mux.NewRouter(),
 	}
 }
 

@@ -39,14 +39,15 @@ func AddServerToProxy(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	proxy.ProxyServer.Mutex.Lock()
+	// Avoiding race conditions using locks on the server
+	proxy.ProxyServer.RouteMap.Mutex.Lock()
 	hash := getHash(newReq.IP, proxy.ProxyServer)
-	proxy.ProxyServer.Mutex.Unlock()
+	proxy.ProxyServer.RouteMap.Mutex.Unlock()
 
-	proxy.ProxyServer.Mutex.Lock()
+	proxy.ProxyServer.RouteMap.Mutex.Lock()
 	// Add this to the routing of the proxy
-	proxy.ProxyServer.Routes[hash] = newReq.IP
-	proxy.ProxyServer.Mutex.Unlock()
+	proxy.ProxyServer.RouteMap.Routes[hash] = newReq.IP
+	proxy.ProxyServer.RouteMap.Mutex.Unlock()
 
 	outData := &responses.AddServerResponse{200, "Successfully added server to proxy", proxy.AddServerRes{Hash: hash}}
 	outJSON, err := json.Marshal(outData)
@@ -66,8 +67,8 @@ func getHash(IP string, server proxy.Server) string {
 	var hash string
 	for {
 		hash = crypto.CreateMD5Hash(util.StringWithCharset(random.Intn(20)+1, util.Charset) + IP)
-		if _, ok := server.Routes[hash]; !ok {
-			server.Routes[hash] = IP
+		if _, ok := server.RouteMap.Routes[hash]; !ok {
+			server.RouteMap.Routes[hash] = IP
 			break
 		}
 	}
