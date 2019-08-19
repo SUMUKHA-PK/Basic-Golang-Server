@@ -1,4 +1,4 @@
-# Basic-Golang-Server
+# Basic-Golang-Server AND Proxy (Reverse)
 
 
 ## 1. The simple server
