@@ -43,7 +43,7 @@ func Server(r *mux.Router, port string) error {
 	go gracefulShutdown(server)
 
 	log.Println("Starting Server on port " + port)
-	return server.ListenAndServe()
+	return server.ListenAndServeTLS("server.crt", "server.key")
 }
 
 // gracefulShutdown shuts down the server on getting a ^C signal

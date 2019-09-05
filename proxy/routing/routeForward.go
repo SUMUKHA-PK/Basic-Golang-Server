@@ -13,6 +13,16 @@ import (
 func RouteForward(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Path
 	url = strings.ReplaceAll(url, "/route/", "")
-	forwardingIp := proxy.ProxyServer.RouteMap.Routes[url]
-	fmt.Println(forwardingIp)
+	IP := strings.Split(url, "/")
+	url = IP[0]
+	forwardingIP := proxy.ProxyServer.RouteMap.Routes[url]
+	forwardingIP += "/" + IP[1]
+	fmt.Println(forwardingIP)
+
+	go keepConnectionOpen(forwardingIP)
+	return
+}
+
+func keepConnectionOpen(forwardingIP string) {
+
 }
