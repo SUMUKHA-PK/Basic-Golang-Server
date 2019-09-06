@@ -17,7 +17,7 @@ import (
 )
 
 // Server is the function that starts the listening server
-func Server(r *mux.Router, port string) error {
+func Server(r *mux.Router, port string,https bool) error {
 
 	if err := checkValidPort(port); err != nil {
 		return err
@@ -43,7 +43,10 @@ func Server(r *mux.Router, port string) error {
 	go gracefulShutdown(server)
 
 	log.Println("Starting Server on port " + port)
-	return server.ListenAndServeTLS("server.crt", "server.key")
+	if https {
+		return server.ListenAndServeTLS("server.crt", "server.key")
+	}
+	return server.ListenAndServer()
 }
 
 // gracefulShutdown shuts down the server on getting a ^C signal
