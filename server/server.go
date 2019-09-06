@@ -33,7 +33,7 @@ func Server(r *mux.Router, port string,https bool) error {
 		})
 	}
 
-	r.HandleFunc("/healthCheck", healthCheckHandler)
+	r.HandleFunc("/healthCheck", HealthCheckHandler)
 
 	server := &http.Server{
 		Handler: r,
@@ -66,8 +66,8 @@ func gracefulShutdown(server *http.Server) {
 	os.Exit(0)
 }
 
-// healthCheckHandler is used for pings to check health of server
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+// HealthCheckHandler is used for pings to check health of server
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Health checked. OK")
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
