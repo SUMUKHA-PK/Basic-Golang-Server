@@ -46,7 +46,7 @@ func Server(r *mux.Router, port string,https bool) error {
 	if https {
 		return server.ListenAndServeTLS("server.crt", "server.key")
 	}
-	return server.ListenAndServer()
+	return server.ListenAndServe()
 }
 
 // gracefulShutdown shuts down the server on getting a ^C signal
