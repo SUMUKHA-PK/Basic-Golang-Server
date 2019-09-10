@@ -17,7 +17,7 @@ import (
 )
 
 // Server is the function that starts the listening server
-func Server(r *mux.Router, port string,https bool) error {
+func Server(r *mux.Router, port string, https bool) error {
 
 	if err := checkValidPort(port); err != nil {
 		return err
