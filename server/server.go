@@ -92,5 +92,6 @@ func checkValidPort(port string) error {
 func updateConnectionCount(c net.Conn, s http.ConnState) {
 	if s == http.StateNew {
 		serverData.ConnectionMap[c.RemoteAddr().String()]++
+		serverData.Count++
 	}
 }
