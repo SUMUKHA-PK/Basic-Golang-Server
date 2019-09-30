@@ -8,4 +8,5 @@ type Data struct {
 	Port          string
 	HTTPS         bool
 	ConnectionMap map[string]int
+	Count         int
 }
