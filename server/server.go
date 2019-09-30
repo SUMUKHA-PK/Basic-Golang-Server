@@ -16,10 +16,10 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-var serverData Data
+var serverData *Data
 
 // Server is the function that starts the listening server
-func Server(data Data) error {
+func Server(data *Data) error {
 
 	serverData = data
 	if err := checkValidPort(data.Port); err != nil {
