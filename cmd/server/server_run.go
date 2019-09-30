@@ -10,19 +10,18 @@ import (
 
 // description of how to start a server
 func main() {
-	r := mux.NewRouter()
-
-	*r = routing.SetupRouting(*r)
-
-	data := server.Data{
-		r,
-		"8080",
-		false,
-		0,
+r := mux.NewRouter()
+	m := make(map[string]int)
+	r = routing.SetupRouting(r)
+	serverData = server.Data{
+		Router:        r,
+		Port:          "55555",
+		HTTPS:         false,
+		ConnectionMap: m,
 	}
-	// call the function based on the port needed and your own routing function
-	err := server.Server(data)
+
+	err := server.Server(serverData)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("Could not start server : %v", err)
 	}
 }
