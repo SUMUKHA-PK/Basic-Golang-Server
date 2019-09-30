@@ -16,11 +16,12 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-var server *http.Server
+var serverData Data
 
 // Server is the function that starts the listening server
 func Server(data Data) error {
 
+	serverData = data
 	if err := checkValidPort(data.Port); err != nil {
 		return err
 	}
@@ -37,12 +38,10 @@ func Server(data Data) error {
 
 	data.Router.HandleFunc("/healthCheck", HealthCheckHandler)
 
-	server = &http.Server{
-		Handler: data.Router,
-		Addr:    ":" + data.Port,
-		ConnState: func(net.Conn, http.ConnState) {
-			data.Count++
-		},
+	server := &http.Server{
+		Handler:   data.Router,
+		Addr:      ":" + data.Port,
+		ConnState: updateConnectionCount,
 	}
 
 	go gracefulShutdown(server)
@@ -88,4 +87,10 @@ func checkValidPort(port string) error {
 		return errors.New("Port number exceeds limit of 65535")
 	}
 	return nil
+}
+
+func updateConnectionCount(c net.Conn, s http.ConnState) {
+	if s == http.StateNew {
+		serverData.ConnectionMap[c.RemoteAddr().String()]++
+	}
 }
