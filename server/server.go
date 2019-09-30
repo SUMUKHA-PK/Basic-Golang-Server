@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,14 +13,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gorilla/mux"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// Server is the function that starts the listening server
-func Server(r *mux.Router, port string, https bool) error {
+var server *http.Server
 
-	if err := checkValidPort(port); err != nil {
+// Server is the function that starts the listening server
+func Server(data Data) error {
+
+	if err := checkValidPort(data.Port); err != nil {
 		return err
 	}
 	LogFileLocation := os.Getenv("LogFileLocation")
@@ -33,17 +35,20 @@ func Server(r *mux.Router, port string, https bool) error {
 		})
 	}
 
-	r.HandleFunc("/healthCheck", HealthCheckHandler)
+	data.Router.HandleFunc("/healthCheck", HealthCheckHandler)
 
-	server := &http.Server{
-		Handler: r,
-		Addr:    ":" + port,
+	server = &http.Server{
+		Handler: data.Router,
+		Addr:    ":" + data.Port,
+		ConnState: func(net.Conn, http.ConnState) {
+			data.Count++
+		},
 	}
 
 	go gracefulShutdown(server)
 
-	log.Println("Starting Server on port " + port)
-	if https {
+	log.Println("Starting Server on port " + data.Port)
+	if data.HTTPS {
 		return server.ListenAndServeTLS("server.crt", "server.key")
 	}
 	return server.ListenAndServe()

@@ -13,7 +13,7 @@ func TestServer(t *testing.T) {
 	}
 
 	recorder := httptest.NewRecorder()
-	reqHandler := http.HandlerFunc(healthCheckHandler)
+	reqHandler := http.HandlerFunc(HealthCheckHandler)
 
 	reqHandler.ServeHTTP(recorder, req)
 

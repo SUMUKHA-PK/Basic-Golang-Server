@@ -14,8 +14,14 @@ func main() {
 
 	*r = routing.SetupRouting(*r)
 
+	data := server.Data{
+		r,
+		"8080",
+		false,
+		0,
+	}
 	// call the function based on the port needed and your own routing function
-	err := server.Server(r, "8080")
+	err := server.Server(data)
 	if err != nil {
 		fmt.Println(err)
 	}
