@@ -74,7 +74,9 @@ func gracefulShutdown(server *http.Server) {
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Health checked. OK")
 	enableCors(&w)
+	delete(ServerData.ConnectionMap, r.RemoteAddr)
 	w.WriteHeader(http.StatusOK)
+	serverData.ConnectionMap
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, `{"alive": true}`)
 }
