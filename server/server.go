@@ -73,6 +73,7 @@ func gracefulShutdown(server *http.Server) {
 // HealthCheckHandler is used for pings to check health of server
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Health checked. OK")
+	enableCors(&w)
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, `{"alive": true}`)
@@ -94,4 +95,8 @@ func updateConnectionCount(c net.Conn, s http.ConnState) {
 		serverData.ConnectionMap[c.RemoteAddr().String()]++
 		serverData.Count++
 	}
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
