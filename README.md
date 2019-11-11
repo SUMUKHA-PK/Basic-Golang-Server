@@ -9,6 +9,8 @@ Key features:
 * Can provide custom routing functions which are of type \*mux.Router
 * Can provide custom ports to create server.
 * Uses go.mod, so just include *github.com/SUMUKHA-PK/Basic-Golang-Server* in your imports to get GOing.
+* Client tracking feature in built in the server. This can be used to keep a track of connections in the server and operate accordingly.
+
 
 Usage:
 
@@ -16,7 +18,7 @@ Usage:
 import (
   .
   .
-  Server "github.com/SUMUKHA-PK/Basic-Golang-Server/server"
+  "github.com/SUMUKHA-PK/Basic-Golang-Server/server"
   .
   .
 )
@@ -24,8 +26,19 @@ import (
 func main(){
   .
   .
-  err:= server.Server(routing_function, port_number)  //Server starts!
-  //Handle err accordingly.
+  m := make(map[string]int)
+	r = routing.SetupRouting(r)
+	serverData = server.Data{
+		Router:        r,
+		Port:          "55555",
+		HTTPS:         false,
+		ConnectionMap: m,
+	}
+
+	err := server.Server(serverData)
+	if err != nil {
+		log.Fatalf("Could not start server : %v", err)
+	}
   .
   .
 }
