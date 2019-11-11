@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -74,7 +75,10 @@ func gracefulShutdown(server *http.Server) {
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Health checked. OK")
 	enableCors(&w)
+	fmt.Println(serverData.ConnectionMap)
+	serverData.ConnectionMap[r.RemoteAddr]--
 	delete(serverData.ConnectionMap, r.RemoteAddr)
+	fmt.Println(serverData.ConnectionMap)
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, `{"alive": true}`)
@@ -92,7 +96,7 @@ func checkValidPort(port string) error {
 }
 
 func updateConnectionCount(c net.Conn, s http.ConnState) {
-	if s == http.StateNew {
+	if s == http.StateActive {
 		serverData.ConnectionMap[c.RemoteAddr().String()]++
 		serverData.Count++
 	}
