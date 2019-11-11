@@ -3,10 +3,8 @@ package server
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -40,9 +38,9 @@ func Server(data *Data) error {
 	data.Router.HandleFunc("/healthCheck", HealthCheckHandler)
 
 	server := &http.Server{
-		Handler:   data.Router,
-		Addr:      ":" + data.Port,
-		ConnState: updateConnectionCount,
+		Handler: data.Router,
+		Addr:    ":" + data.Port,
+		// ConnState: updateConnectionCount,
 	}
 
 	go gracefulShutdown(server)
@@ -75,10 +73,6 @@ func gracefulShutdown(server *http.Server) {
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Health checked. OK")
 	enableCors(&w)
-	fmt.Println(serverData.ConnectionMap)
-	serverData.ConnectionMap[r.RemoteAddr]--
-	delete(serverData.ConnectionMap, r.RemoteAddr)
-	fmt.Println(serverData.ConnectionMap)
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, `{"alive": true}`)
@@ -95,12 +89,12 @@ func checkValidPort(port string) error {
 	return nil
 }
 
-func updateConnectionCount(c net.Conn, s http.ConnState) {
-	if s == http.StateActive {
-		serverData.ConnectionMap[c.RemoteAddr().String()]++
-		serverData.Count++
-	}
-}
+// func updateConnectionCount(c net.Conn, s http.ConnState) {
+// 	if s == http.StateActive {
+// 		serverData.ConnectionMap[c.RemoteAddr().String()]++
+// 		serverData.Count++
+// 	}
+// }
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
