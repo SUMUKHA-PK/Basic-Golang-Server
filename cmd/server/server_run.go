@@ -15,6 +15,7 @@ func main() {
 	serverData := server.Data{
 		Router:        r,
 		Port:          "5555",
+		IP:            "127.0.0.1",
 		HTTPS:         false,
 		ConnectionMap: m,
 	}

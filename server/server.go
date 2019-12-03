@@ -39,13 +39,13 @@ func Server(data *Data) error {
 
 	server := &http.Server{
 		Handler: data.Router,
-		Addr:    ":" + data.Port,
+		Addr:    data.IP + ":" + data.Port,
 		// ConnState: updateConnectionCount,
 	}
 
 	go gracefulShutdown(server)
 
-	log.Println("Starting Server on port " + data.Port)
+	log.Println("Starting Server on " + data.IP + ":" + data.Port)
 	if data.HTTPS {
 		return server.ListenAndServeTLS("server.crt", "server.key")
 	}
